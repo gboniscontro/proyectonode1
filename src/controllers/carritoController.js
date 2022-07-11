@@ -1,12 +1,12 @@
 
 const { response } = require('express')
-const { carrito } = require('../models/carritoModel')
-
+//const { carrito } = require('../models/carritoModel')
+const { carrito } = require('../daos/CarritosDaoMongo')
 
 module.exports = {
     create: (request, response) => {
 
-        carrito.create()
+        carrito.saveCarrito({})
             .then((e) => response.status(200).json({ message: 'Carrito creado exitosamente' }))
 
     },
