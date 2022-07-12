@@ -1,6 +1,16 @@
+/*
+var admin = require("firebase-admin");
+
+var serviceAccount = require("path/to/serviceAccountKey.json");
+
+admin.initializeApp({
+  credential: admin.credential.cert(serviceAccount)
+});
+*/
+
 let admin = require('firebase-admin')
 let { FIRESTORE_FILE } = require('../config/globals')
-const FIRESTORE_PATH_FILE = require(FIRESTORE_FILE)
+const FIRESTORE_PATH_FILE = require('../../' + FIRESTORE_FILE)
 
 admin.initializeApp({
   credential: admin.credential.cert(FIRESTORE_PATH_FILE)
@@ -9,29 +19,29 @@ admin.initializeApp({
 const db = admin.firestore()
 
 class ContainerFirestore {
-  constructor(collection){
+  constructor(collection) {
     this.collection = db.collection(collection)
     console.log(`Base conectada con la collection ${collection}`)
   }
 
-  async save(document, id){
+  async save(document, id) {
     let doc = this.collection.doc(`${id}`)
     let item = await doc.create(document)
     return item
   }
 
-  async getAll(){
+  async getAll() {
     let result = await this.collection.get()
-    result = result.docs.map(doc => ({ 
+    result = result.docs.map(doc => ({
       id: doc.id,
       data: doc.data()
     }))
     return result
   }
 
-  async getById(id){
+  async getById(id) {
     let result = await this.collection.get()
-    result = result.docs.map(doc => ({ 
+    result = result.docs.map(doc => ({
       id: doc.id,
       data: doc.data()
     }))
@@ -39,13 +49,13 @@ class ContainerFirestore {
     return item
   }
 
-  async delete(id){
+  async delete(id) {
     let doc = this.collection.doc(`${id}`)
     let item = doc.delete()
     return ({ status: 'Deleted' })
   }
 
-  async update(content, id){
+  async update(content, id) {
     let doc = this.collection.doc(`${id}`)
     let item = await doc.update(content)
     return item

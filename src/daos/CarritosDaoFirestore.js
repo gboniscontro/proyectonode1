@@ -1,4 +1,4 @@
-const { ContainerFirestore } = require('../contenedores/ContainerFirestore')
+const { ContainerFirestore } = require('../containers/ContainerFirestore')
 
 class CarritoDaoFirestore extends ContainerFirestore {
   constructor() {
