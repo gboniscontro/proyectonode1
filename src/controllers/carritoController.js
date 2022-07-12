@@ -7,11 +7,11 @@ module.exports = {
     create: (request, response) => {
 
         carrito.saveCarrito({})
-            .then((e) => response.status(200).json({ message: 'Carrito creado exitosamente' }))
+            .then((e) => response.status(200).json({ dato: e, message: 'Carrito creado exitosamente' }))
 
     },
     delete: (request, response) => {
-        carrito.deleteById(Number(request.params.id))
+        carrito.deleteById(request.params.id)
             .then((e) => response.status(200).json({ message: 'Carrito borrado exitosamente' }))
             .catch((e) => response.status(404).json({ error: 'Error en borrado del carrito' }))
 
@@ -36,7 +36,7 @@ module.exports = {
     },
 
     deleteByIdProd: (request, response) => {
-        carrito.deleteByIdProd(Number(request.params.id), Number(request.params.id_prod))
+        carrito.deleteByIdProd((request.params.id), (request.params.id_prod))
             .then((e) => response.status(200).json({ message: 'Producto borrado exitosamente' }))
             .catch((e) => response.status(404).json({ error: 'Error en borrado del producto' }))
 
