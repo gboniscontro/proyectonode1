@@ -1,13 +1,13 @@
 const ContainerMongo = require('../containers/ContainerMongo')
-const CarritoModel = require('../models/Carritos')
+const CarritoModel = require('../models/carritos')
 
 class CarritoDaoMongo extends ContainerMongo {
-	constructor(){
+	constructor() {
 		super(CarritoModel)
 	}
 
-	async saveCarrito(Carrito){
-		await this.save(Carrito)	
+	async saveCarrito(Carrito) {
+		await this.save(Carrito)
 		return Carrito
 	}
 
@@ -52,15 +52,10 @@ class CarritoDaoMongo extends ContainerMongo {
 					}
 				}
 			)
+			await doc.save();
 
-			fs.promises.writeFile(this.name, JSON.stringify(this.carritos, null, 2))
-				.then(
-					() =>
-						console.log(`El carrito con ID ${carrito.id} se agrego un producto`)
-				)
-				.catch(
-					(e) => console.log(e)
-				)
+
+
 
 		} catch (error) {
 			console.log('error funcion addprod')
@@ -104,8 +99,8 @@ class CarritoDaoMongo extends ContainerMongo {
 			console.log(`No se pudo borrar el  ${id}`)
 		}
 	}
-	
+
 
 }
 const carrito = new CarritoDaoMongo()
-module.exports = {carrito, CarritoDaoMongo }
+module.exports = { carrito, CarritoDaoMongo }

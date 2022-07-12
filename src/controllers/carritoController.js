@@ -28,7 +28,7 @@ module.exports = {
             let id = request.params.id
             let arrProd = request.body
             carrito.addProd(id, arrProd)
-            return response.status(200).json({ message: 'Producto agregado' })
+            return response.status(200).json({ carrito: arrProd, message: 'Producto agregado' })
         } catch (error) {
             return response.status(404).json({ error: 'Producto no agregado' })
         }

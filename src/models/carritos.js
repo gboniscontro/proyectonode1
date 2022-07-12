@@ -1,9 +1,14 @@
 const mongoose = require('mongoose')
 
 const CarritoSchema = new mongoose.Schema({
-    id: { type: Number, required: false },
-    timestamp: { type: Number, required: false },
-    productos: { type: Array, required: false }
+    timestamp: {
+        type: Number,
+        required: false,
+    },
+    productos: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Producto'
+    }]
 })
 
-module.exports = mongoose.model('carritos', CarritoSchema); 
+module.exports = mongoose.model('Carrito', CarritoSchema); 

@@ -21,9 +21,31 @@ class ContainerMongo {
   async getAll() {
     return await this.model.find()
   }
+  async getById(id) {
+    return await this.model.findById(id)
+  }
 
   async save(data) {
     return await this.model.create(data)
+  }
+  async deleteById(id) {
+    try {
+      const deleted = await this.model.findOneAndDelete({ _id: id });
+      return id;
+    }
+    catch (error) {
+      return `Hubo un error "${error}"`
+    }
+  }
+
+  async updateById(id, item) {
+    try {
+      const updated = await this.model.findOneAndUpdate({ _id: id }, item);
+      return updated;
+    }
+    catch (error) {
+      return `Hubo un error "${error}"`
+    }
   }
 }
 
