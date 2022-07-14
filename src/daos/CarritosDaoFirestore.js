@@ -28,15 +28,40 @@ class CarritoDaoFirestore extends ContainerFirestore {
     }
   }
   async deleteByIdProd(id, idprod) {
-    const carrito = await this.getById(id);
+    /*const carrito = await this.getById(id);
     carrito.productos.pull(idprod);
     await carrito.save();
+    */
+    try {
+      const colRef = await this.collection.doc(id).get();
+      console.log(colRef.data())
+      const { productos: arrProd } = colRef.data()
+      console.log(arrProd) //.productos
+      let arrnew = []
+      for (const p of arrProd) {
+        if (idprod != p.id) {
+          arrnew.push(p)
+        }
+
+
+      }
+      const objRef = await this.collection.doc(id).update(
+        { productos: arrnew })
+
+
+      return await this.getById(id)
+    } catch (err) {
+      console.log(err)
+      throw new ObjError(500, "Error al borrar productos del carrito", err)
+    }
+
   }
 
   async getById(id) {
     try {
-      let result = await (await this.collection.doc(id).get()).data()
-      return { id: id, ...result };
+      let result = await this.collection.doc(id).get()
+
+      return { id: id, ...result.data() };
 
 
     } catch (error) {

@@ -22,9 +22,9 @@ module.exports = {
         carrito.getById(id)
             .then((p) => {
                 console.log("json p:", p)
-                response.status(200).json({ dato: p, message: "productos agregados al carrito" })
+                response.status(200).json({ dato: p, message: "carrito agregados al carrito" })
             })
-            .catch((e) => res.status(400).json({ error: 'producto no encontrado getall' }))
+            .catch((e) => response.status(400).json({ e: e, error: 'carrito no encontrado getall' }))
     },
 
     addProd: (request, response) => {
@@ -40,9 +40,9 @@ module.exports = {
     },
 
     deleteByIdProd: (request, response) => {
-        carrito.deleteByIdProd((request.params.id), (request.params.id_prod))
+        carrito.deleteByIdProd(request.params.id, request.params.id_prod)
             .then((e) => response.status(200).json({ message: 'Producto borrado exitosamente' }))
-            .catch((e) => response.status(404).json({ error: 'Error en borrado del producto' }))
+            .catch((e) => response.status(404).json({ error: e, message: 'Error en borrado del producto' }))
 
     }
 }
