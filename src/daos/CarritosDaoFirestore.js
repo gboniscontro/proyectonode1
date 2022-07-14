@@ -1,43 +1,51 @@
 const { ContainerFirestore } = require('../containers/ContainerFirestore')
-
+const ObjError = require('../objError');
 class CarritoDaoFirestore extends ContainerFirestore {
   constructor() {
     super('Carritos')
-    this.id = 0
-    this.checkId()
   }
 
-  // Chequea para obtener el ultimo ID y asignarlo al id local (this.id)
-  async checkId() {
-    let Carritos = await this.getAll()
-
-    if (Carritos.length > 0) {
-
-      this.id = parseInt(Carritos[Carritos.length - 1].id) + 1
+  async saveCarrito(item) {
+    try {
+      item.timestamp = Date.now();
+      const id = await this.save(item);
+      return id;
+    }
+    catch (e) {
+      throw new ObjError(500, "Error al agregar un carrito a la  base Firestore", e)
     }
   }
+  async addProd(id, arrProd) {
+    try {
+      await this.collection.doc(id).update(
+        { productos: arrProd })
+      return await this.getById(id)
 
-  saveCarrito(Carrito) {
-    if (Carrito) {
-      console.log(Carrito)
-      this.save(Carrito, this.id)
-      // console.log(this.id)
-      this.id++
-      return Carrito
-    } else {
-      return 'Not saved'
+
+    } catch (err) {
+      console.log(err)
+      // throw new ObjError(500, "Error al agregar productos al carrito", err)
     }
   }
-
-  updateCarrito(Carrito, id) {
-    if (Carrito) {
-      console.log(Carrito)
-      this.update(Carrito, id)
-      return Carrito
-    } else {
-      return 'Not updated'
-    }
+  async deleteByIdProd(id, idprod) {
+    const carrito = await this.getById(id);
+    carrito.productos.pull(idprod);
+    await carrito.save();
   }
+
+  async getById(id) {
+    try {
+      let result = await (await this.collection.doc(id).get()).data()
+      return { id: id, ...result };
+
+
+    } catch (error) {
+      throw new ObjError(500, `ERROR getbyid `, error)
+    }
+
+  }
+
+
 }
-
-module.exports = { CarritoDaoFirestore }
+const carrito = new CarritoDaoFirestore()
+module.exports = { carrito }

@@ -6,9 +6,9 @@ const CarritoSchema = new mongoose.Schema({
         required: false,
     },
     productos: [{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Producto'
+        type: String       
     }]
+
 })
 
 module.exports = mongoose.model('Carrito', CarritoSchema); 

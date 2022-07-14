@@ -1,43 +1,35 @@
-const { ContainerFirestore } = require('../contenedores/ContainerFirestore')
+const { ContainerFirestore } = require('../containers/ContainerFirestore')
+const ObjError = require('../objError');
 
 class ProductoDaoFirestore extends ContainerFirestore {
   constructor() {
     super('Productos')
-    this.id = 0
-    this.checkId()
   }
 
-  // Chequea para obtener el ultimo ID y asignarlo al id local (this.id)
-  async checkId() {
-    let Productos = await this.getAll()
-
-    if (Productos.length > 0) {
-
-      this.id = parseInt(Productos[Productos.length - 1].id) + 1
+  async saveProduct(item) {
+    try {
+      item.timestamp = Date.now();
+      const id = await this.save(item);
+      return id;
+    }
+    catch (e) {
+      throw new ObjError(500, "Error al agregar un producto a la  base Firestore", e)
     }
   }
 
-  saveProducto(Producto) {
-    if (Producto) {
-      console.log(Producto)
-      this.save(Producto, this.id)
-      // console.log(this.id)
-      this.id++
-      return Producto
-    } else {
-      return 'Not saved'
+  async addProducts(products) {
+    try {
+      for (const p of products) {
+        const id = await this.saveProduct(p);
+        p.id = id
+      }
+    }
+    catch (e) {
+      throw new ObjError(500, "Error al agregar productos a la  base Firestore", e)
     }
   }
 
-  updateProducto(Producto, id) {
-    if (Producto) {
-      console.log(Producto)
-      this.update(Producto, id)
-      return Producto
-    } else {
-      return 'Not updated'
-    }
-  }
+
 }
-
-module.exports = { ProductoDaoFirestore }
+const productos = new ProductoDaoFirestore()
+module.exports = { productos }

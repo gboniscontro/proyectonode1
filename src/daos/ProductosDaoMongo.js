@@ -1,6 +1,6 @@
 const ContainerMongo = require('../containers/ContainerMongo')
 const productModel = require('../models/productos')
-
+const ObjError = require('../objError')
 class productDaoMongo extends ContainerMongo {
 	constructor() {
 		super(productModel)
@@ -9,11 +9,11 @@ class productDaoMongo extends ContainerMongo {
 	async saveProduct(item) {
 		try {
 			item.timestamp = Date.now();
-			const id = await this.save(item);
-			return id._id;
+			const elem = await this.save(item);
+			return elem._id;
 		}
-		catch (error) {
-			console.log(`Hubo un error "${error}"`)
+		catch (e) {
+			throw new ObjError(500, "Error al agregar un producto a la  base Mongo", e)	
 		}
 	}
 
@@ -24,7 +24,7 @@ class productDaoMongo extends ContainerMongo {
 			}
 		}
 		catch (e) {
-			console.log(`Hubo un error al actualizar el carrito: "${e}"`)
+			throw new ObjError(500, "Error al agregar productos a la  base Mongo", e)		
 		}
 	}
 
@@ -32,4 +32,4 @@ class productDaoMongo extends ContainerMongo {
 
 }
 const productos = new productDaoMongo()
-module.exports = { productos, productDaoMongo }
+module.exports = { productos }

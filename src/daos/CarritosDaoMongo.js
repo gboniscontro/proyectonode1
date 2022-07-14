@@ -1,5 +1,6 @@
 const ContainerMongo = require('../containers/ContainerMongo')
 const { productDaoMongo } = require('./ProductosDaoMongo')
+const ObjError = require('../objError')
 
 const CarritoModel = require('../models/carritos')
 
@@ -20,17 +21,19 @@ class CarritoDaoMongo extends ContainerMongo {
 
 	async addProd(id, arrProd) {
 		try {
-			const producto = new productDaoMongo();
+			//const producto = new productDaoMongo();
 			const carrito = await this.getById(id);
+			console.log(carrito)
 			for (const p of arrProd) {
-				const prod = await producto.getById(p.id)
-				//console.log(p.id, prod)
+				//	const prod = await producto.getById(p.id)
+				console.log(p)
+				carrito.productos.push(p.id)
 
-				prod ?? carrito.productos.push(prod)
 			}
+			console.log(carrito)
 			await this.updateById(id, carrito);
-		} catch (error) {
-			console.log(error, 'error funcion addprod')
+		} catch (err) {
+			throw new ObjError(500, "Error al agregar productos al carrito", err)
 		}
 	}
 	async deleteByIdProd(id, idprod) {

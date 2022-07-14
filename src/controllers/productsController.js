@@ -1,7 +1,9 @@
 
 const { response } = require('express')
+const { TIPO_PERSISTENCIA } = require('../config/globals')
 //const { productos } = require('../models/productsModel')
-const { productos } = require('../daos/ProductosDaoMongo')
+
+const { productos } = require('../daos/ProductosDao' + TIPO_PERSISTENCIA)
 
 
 module.exports = {
@@ -24,6 +26,7 @@ module.exports = {
         console.log(producto)
         productos.addProducts(producto)
             .then((e) => response.status(201).json(producto))
+            .catch((e) => response.status(e.estado).json({ error: 'producto no encontrado getall' }))
 
     },
     update: (request, response) => {

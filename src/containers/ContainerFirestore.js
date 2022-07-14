@@ -1,22 +1,16 @@
-/*
-var admin = require("firebase-admin");
-
-var serviceAccount = require("path/to/serviceAccountKey.json");
-
-admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount)
-});
-*/
 
 let admin = require('firebase-admin')
 let { FIRESTORE_FILE } = require('../config/globals')
-const FIRESTORE_PATH_FILE = require('../../' + FIRESTORE_FILE)
+
+const serviceAccount = require('../../' + FIRESTORE_FILE)
+const { getFirestore, Timestamp, FieldValue } = require('firebase-admin/firestore');
+const ObjError = require('../objError');
 
 admin.initializeApp({
-  credential: admin.credential.cert(FIRESTORE_PATH_FILE)
+  credential: admin.credential.cert(serviceAccount)
 })
 
-const db = admin.firestore()
+const db = getFirestore();
 
 class ContainerFirestore {
   constructor(collection) {
@@ -24,35 +18,49 @@ class ContainerFirestore {
     console.log(`Base conectada con la collection ${collection}`)
   }
 
-  async save(document, id) {
-    let doc = this.collection.doc(`${id}`)
-    let item = await doc.create(document)
-    return item
+  async save(data) {
+    try {
+      let docRef = await this.collection.add(data)
+      console.log("Document written with ID: ", docRef.id);
+      return docRef.id
+    } catch (error) {
+      console.error("Error adding document: ", error);
+      throw new ObjError(500, "Error adding document save firestore: ", error)
+    }
   }
 
   async getAll() {
     let result = await this.collection.get()
     result = result.docs.map(doc => ({
       id: doc.id,
-      data: doc.data()
+      ...doc.data()
     }))
     return result
   }
 
   async getById(id) {
-    let result = await this.collection.get()
-    result = result.docs.map(doc => ({
-      id: doc.id,
-      data: doc.data()
-    }))
-    let item = result.find(elem => elem.id == id)
-    return item
+    try {
+      let result = await this.collection.doc(id).get()
+      if (result == undefined) {
+        throw new ObjError(500, `id no se encontro`, "")
+      }
+      else {
+        return { id, ...result.data }
+      }
+    } catch (error) {
+      throw new ObjError(500, `ERROR getbyid `, error)
+    }
+
   }
 
   async delete(id) {
-    let doc = this.collection.doc(`${id}`)
-    let item = doc.delete()
-    return ({ status: 'Deleted' })
+    try {
+      let doc = this.collection.doc(id).delete()
+      return doc
+    } catch (error) {
+      throw new ObjError(500, `ERROR deleteyid ${id}`, error)
+    }
+
   }
 
   async update(content, id) {

@@ -1,7 +1,8 @@
 
 const { response } = require('express')
+const { TIPO_PERSISTENCIA } = require('../config/globals')
 //const { carrito } = require('../models/carritoModel')
-const { carrito } = require('../daos/CarritosDaoMongo')
+const { carrito } = require('../daos/CarritosDao' + TIPO_PERSISTENCIA)
 //const { carrito } = require('../daos/CarritosDaoFirestore')
 module.exports = {
     create: (request, response) => {
@@ -13,13 +14,16 @@ module.exports = {
     delete: (request, response) => {
         carrito.deleteById(request.params.id)
             .then((e) => response.status(200).json({ message: 'Carrito borrado exitosamente' }))
-            .catch((e) => response.status(404).json({ error: 'Error en borrado del carrito' }))
+            .catch((e) => response.status(e.estado).json({ error: 'Error en borrado del carrito' }))
 
     },
     getById: (request, response) => {
         let id = request.params.id
         carrito.getById(id)
-            .then((p) => response.status(200).json(p))
+            .then((p) => {
+                console.log("json p:", p)
+                response.status(200).json({ dato: p, message: "productos agregados al carrito" })
+            })
             .catch((e) => res.status(400).json({ error: 'producto no encontrado getall' }))
     },
 
